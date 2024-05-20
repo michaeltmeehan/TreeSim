@@ -48,6 +48,13 @@ simulate_phylogeny(linelist::DataFrame; Nₑ::Float64=1e-6) -> DataFrame
 #### Returns
 - `DataFrame`: A DataFrame representing the combined phylogenetic tree, containing columns for times (t), node IDs (id), left and right child IDs (left, right), leaf IDs (leaf_id), host IDs (host), and node types (type).
 
+## Citation
+If you use TreeSim in your research, please cite the following paper related to the bounded coalescent model theory and implementation:
+
+Carson J, Ledda A, Ferretti L, Keeling MJ, Didelot X. The bounded coalescent model: Conditioning a genealogy on a minimum root date. J Theor Biol. 2022 Sep 7;548:111186. [DOI: 10.1016/j.jtbi.2022.111186](https://doi.org/10.1016/j.jtbi.2022.111186). Epub 2022 Jun 10. PMID: 35697144.
+
+This paper describes a new algorithm to simulate from the bounded coalescent model directly, which is more computationally efficient than the rejection sampling approach.
+
 ## License
 This package is licensed under the MIT License.
 
