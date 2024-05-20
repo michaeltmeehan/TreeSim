@@ -1,3 +1,21 @@
+"""
+    homochronous_probability(n_start::Int, 
+                             n_end::Int, 
+                             dt::Float64, 
+                             Nₑ::Float64) -> Float64
+
+Calculate the probability of transitioning from `n_start` lineages to `n_end` lineages over a 
+time interval `dt` under a constant population size `Nₑ`.
+
+# Arguments
+- `n_start::Int`: The number of lineages at the start of the interval.
+- `n_end::Int`: The number of lineages at the end of the interval.
+- `dt::Float64`: The time interval over which the transition occurs.
+- `Nₑ::Float64`: The effective population size.
+
+# Returns
+- `Float64`: The probability of transitioning from `n_start` to `n_end` lineages over the time interval `dt`. Returns 0.0 if the inputs are invalid or if `n_start` is less than `n_end`.
+"""
 function homochronous_probability(n_start::Int, 
                                   n_end::Int, 
                                   dt::Float64, 
@@ -59,6 +77,25 @@ function homochronous_probability(n_start::Int,
 end
 
 
+"""
+    bounded_times_likelihood(leaf_times::Vector{Float64},
+                             leaves::Vector{Int64},
+                             coalescence_times::Vector{Float64},
+                             Nₑ::Float64,
+                             bound::Float64) -> Float64
+
+Calculate the likelihood of the coalescence times under the bounded coalescent model.
+
+# Arguments
+- `leaf_times::Vector{Float64}`: A vector of leaf (sampling) times.
+- `leaves::Vector{Int64}`: A vector indicating the number of leaves at each time point.
+- `coalescence_times::Vector{Float64}`: A vector of coalescence times.
+- `Nₑ::Float64`: The effective population size.
+- `bound::Float64`: The lower bound for the time interval.
+
+# Returns
+- `Float64`: The likelihood of the coalescence times given the bounded coalescent model.
+"""
 function bounded_times_likelihood(leaf_times::Vector{Float64},
                                   leaves::Vector{Int64},
                                   coalescence_times::Vector{Float64},

@@ -1,3 +1,34 @@
+"""
+    constrain_coalescences!(const_lower::Vector{Float64},
+                            const_upper::Vector{Float64},
+                            const_lineages::Vector{Int64},
+                            const_events::Vector{Int64},
+                            lineages::Vector{Int64},
+                            times::Vector{Float64},
+                            leaves::Vector{Int64},
+                            Nₑ::Float64,
+                            bound::Float64,
+                            norm_tol::Float64) -> Float64
+
+Constrain the coalescence events within given time bounds and update the relevant constraints. 
+This function separates coalescence events that occur within the same time interval into distinct 
+intervals, ensuring the constraints on the coalescence process are respected.
+
+# Arguments
+- `const_lower::Vector{Float64}`: Vector to store the lower bounds of the coalescence intervals.
+- `const_upper::Vector{Float64}`: Vector to store the upper bounds of the coalescence intervals.
+- `const_lineages::Vector{Int64}`: Vector to store the number of lineages at each interval.
+- `const_events::Vector{Int64}`: Vector to store the number of events (coalescences) at each interval.
+- `lineages::Vector{Int64}`: Vector containing the number of lineages at each time point.
+- `times::Vector{Float64}`: Vector of time points.
+- `leaves::Vector{Int64}`: Vector indicating the number of leaves at each time point.
+- `Nₑ::Float64`: Effective population size.
+- `bound::Float64`: Lower bound for the time interval.
+- `norm_tol::Float64`: Tolerance for significance loss in probability calculations.
+
+# Returns
+- `Float64`: The likelihood of the constrained coalescence events.
+"""
 function constrain_coalescences!(const_lower::Vector{Float64},
                                  const_upper::Vector{Float64},
                                  const_lineages::Vector{Int64},
@@ -103,7 +134,23 @@ constrain_coalescences!(const_lower::Vector{Float64},
 
 
 
+"""
+    significance_loss(n_start::Int64, 
+                      n_end::Int64, 
+                      dt::Float64, 
+                      Nₑ::Float64) -> Float64
 
+Calculate the loss of significant figures in probability calculations for the transition from `n_start` lineages to `n_end` lineages over a time interval `dt` under a constant population size `Nₑ`.
+
+# Arguments
+- `n_start::Int64`: The number of lineages at the start of the interval.
+- `n_end::Int64`: The number of lineages at the end of the interval.
+- `dt::Float64`: The time interval over which the transition occurs.
+- `Nₑ::Float64`: The effective population size.
+
+# Returns
+- `Float64`: The ratio of the total probability to the maximum probability increment, indicating the loss of significant figures in the probability calculations. Returns 1.0 if the inputs are invalid or if the transition is from one lineage to one lineage.
+"""
 function significance_loss(n_start::Int64, 
                            n_end::Int64, 
                            dt::Float64, 

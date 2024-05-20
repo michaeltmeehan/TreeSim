@@ -1,3 +1,24 @@
+"""
+    sample_bounded_times(times::Vector{Float64},
+                         leaves::Vector{Int64},
+                         Nₑ::Float64,
+                         bound::Float64,
+                         n_sam::Int64) -> Tuple{Matrix{Float64}, Vector{Float64}}
+
+Sample coalescence times using the bounded coalescent model and calculate the likelihood of each sample.
+
+# Arguments
+- `times::Vector{Float64}`: A vector of time points.
+- `leaves::Vector{Int64}`: A vector indicating the number of leaves at each time point.
+- `Nₑ::Float64`: The effective population size.
+- `bound::Float64`: The lower bound for the time interval.
+- `n_sam::Int64`: The number of samples to generate.
+
+# Returns
+- `Tuple{Matrix{Float64}, Vector{Float64}}`: A tuple containing:
+  - `Matrix{Float64}`: A matrix of sampled coalescence times.
+  - `Vector{Float64}`: A vector of likelihoods for each sample.
+"""
 function sample_bounded_times(times::Vector{Float64},
                               leaves::Vector{Int64},
                               Nₑ::Float64,
@@ -46,7 +67,25 @@ function sample_bounded_times(times::Vector{Float64},
 end
 
 
+"""
+    sample_bounded_times(times::Vector{Float64},
+                         leaves::Vector{Int64},
+                         Nₑ::Float64,
+                         bound::Float64) -> Tuple{Vector{Float64}, Float64}
 
+Sample coalescence times using the bounded coalescent model and calculate the likelihood for a single sample.
+
+# Arguments
+- `times::Vector{Float64}`: A vector of time points.
+- `leaves::Vector{Int64}`: A vector indicating the number of leaves at each time point.
+- `Nₑ::Float64`: The effective population size.
+- `bound::Float64`: The lower bound for the time interval.
+
+# Returns
+- `Tuple{Vector{Float64}, Float64}`: A tuple containing:
+  - `Vector{Float64}`: A vector of sampled coalescence times.
+  - `Float64`: The likelihood of the sampled coalescence times.
+"""
 function sample_bounded_times(times::Vector{Float64},
                               leaves::Vector{Int64},
                               Nₑ::Float64,
@@ -56,7 +95,25 @@ function sample_bounded_times(times::Vector{Float64},
 end
 
 
+"""
+    sample_topology(leaf_times::Vector{Float64},
+                    leaves::Vector{Int64},
+                    coalescence_times::Vector{Float64}) -> Tuple{Matrix{Int64}, Vector{Float64}, Float64, DataFrame}
 
+Sample the topology of the phylogenetic tree based on coalescence times.
+
+# Arguments
+- `leaf_times::Vector{Float64}`: A vector of leaf (sampling) times.
+- `leaves::Vector{Int64}`: A vector indicating the number of leaves at each time point.
+- `coalescence_times::Vector{Float64}`: A vector of coalescence times.
+
+# Returns
+- `Tuple{Matrix{Int64}, Vector{Float64}, Float64, DataFrame}`: A tuple containing:
+  - `Matrix{Int64}`: A matrix representing the edges of the phylogenetic tree.
+  - `Vector{Float64}`: A vector of edge lengths.
+  - `Float64`: The likelihood of the sampled tree topology.
+  - `DataFrame`: A dataframe containing node information, including times, IDs, and parent-child relationships.
+"""
 function sample_topology(leaf_times::Vector{Float64},
                          leaves::Vector{Int64},
                          coalescence_times::Vector{Float64})::Tuple{Matrix{Int64}, Vector{Float64}, Float64, DataFrame}
@@ -160,6 +217,19 @@ function sample_topology(leaf_times::Vector{Float64},
 end
 
 
+"""
+    sample_wtree(host::Host, Nₑ::Float64; relabel=true) -> DataFrame
+
+Generate a within-host phylogenetic tree for a given host based on their leaf (sampling) times and other characteristics.
+
+# Arguments
+- `host::Host`: A `Host` object containing information about the host, including leaf times, root time, and IDs.
+- `Nₑ::Float64`: The effective population size.
+- `relabel::Bool`: A boolean flag indicating whether to relabel the nodes in the resulting tree (default is true).
+
+# Returns
+- `DataFrame`: A dataframe representing the within-host phylogenetic tree, containing columns for times (`t`), node IDs (`id`), left and right child IDs (`left`, `right`), leaf IDs (`leaf_id`), host IDs (`host`), and node types (`type`).
+"""
 function sample_wtree(host::Host, Nₑ::Float64; relabel=true)
     isnothing(host.infector) && return DataFrame(t = [], id = [], left = [], right = [], leaf_id = [], host = [], type = [])
     leaves = fill(1, length(host.leaf_times))
@@ -180,6 +250,27 @@ function sample_wtree(host::Host, Nₑ::Float64; relabel=true)
 end
 
 
+"""
+    sample_wtree(leaf_times::Vector{Float64},
+                 leaves::Vector{Int64},
+                 Nₑ::Float64,
+                 bound::Float64) -> Tuple{Matrix{Int64}, Vector{Float64}, Float64, DataFrame}
+
+Generate a phylogenetic tree based on leaf (sampling) times, number of leaves, effective population size, and a time bound.
+
+# Arguments
+- `leaf_times::Vector{Float64}`: A vector of leaf (sampling) times.
+- `leaves::Vector{Int64}`: A vector indicating the number of leaves at each time point.
+- `Nₑ::Float64`: The effective population size.
+- `bound::Float64`: The lower bound for the time interval.
+
+# Returns
+- `Tuple{Matrix{Int64}, Vector{Float64}, Float64, DataFrame}`: A tuple containing:
+  - `Matrix{Int64}`: A matrix representing the edges of the phylogenetic tree.
+  - `Vector{Float64}`: A vector of edge lengths.
+  - `Float64`: The likelihood of the sampled tree.
+  - `DataFrame`: A dataframe containing node information, including times, IDs, and parent-child relationships.
+"""
 function sample_wtree(leaf_times::Vector{Float64},
                       leaves::Vector{Int64},
                       Nₑ::Float64,

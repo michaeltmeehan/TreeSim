@@ -1,3 +1,26 @@
+"""
+    backward_sampler!(lineages::Vector{Int64},
+                      forward_probs::Matrix{Float64},
+                      times::Vector{Float64},
+                      leaves::Vector{Int64},
+                      Nₑ::Float64,
+                      bound::Float64,
+                      bound_size::Int64) -> Float64
+
+Perform backward sampling to generate lineages and calculate the likelihood of the sample.
+
+# Arguments
+- `lineages::Vector{Int64}`: A vector to store the number of lineages at each time step.
+- `forward_probs::Matrix{Float64}`: A matrix of forward probabilities.
+- `times::Vector{Float64}`: A vector of time points.
+- `leaves::Vector{Int64}`: A vector indicating the number of leaves at each time point.
+- `Nₑ::Float64`: The effective population size.
+- `bound::Float64`: The lower bound for the time interval.
+- `bound_size::Int64`: The initial number of lineages at the bound.
+
+# Returns
+- `Float64`: The likelihood of the sampled lineages.
+"""
 function backward_sampler!(lineages::Vector{Int64},
                            forward_probs::Matrix{Float64},
                            times::Vector{Float64},

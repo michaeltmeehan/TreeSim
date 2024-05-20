@@ -1,3 +1,21 @@
+"""
+    forward_algorithm(times::Vector{Float64},
+                      leaves::Vector{Int64},
+                      Nₑ::Float64,
+                      bound::Float64) -> Matrix{Float64}
+
+Calculate the forward probabilities of transitioning between different numbers of lineages 
+over a series of time intervals using a forward algorithm.
+
+# Arguments
+- `times::Vector{Float64}`: A vector of time points.
+- `leaves::Vector{Int64}`: A vector indicating the number of leaves at each time point.
+- `Nₑ::Float64`: The effective population size.
+- `bound::Float64`: The lower bound for the time interval.
+
+# Returns
+- `Matrix{Float64}`: A matrix of forward probabilities, where each element represents the probability of transitioning from one number of lineages to another over a given time interval.
+"""
 function forward_algorithm(times::Vector{Float64},
                            leaves::Vector{Int64},
                            Nₑ::Float64,

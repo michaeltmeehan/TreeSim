@@ -1,9 +1,14 @@
 """
-    CantorPair(x, y)
+    CantorPair(x, y) -> Int
 
+Generate a unique integer from two non-negative integers using the Cantor pairing function.
 
-    CantorPair(x,y)
-    Calculate the Cantor Pair mapping of `x` and `y`.
+# Arguments
+- `x::Int`: The first non-negative integer.
+- `y::Int`: The second non-negative integer.
+
+# Returns
+- `Int`: A unique integer generated from the two input integers using the Cantor pairing function. Returns 0 if `y` is 0.
 """
 function CantorPair(x, y)
     y == 0 && return 0
