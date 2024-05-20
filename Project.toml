@@ -1,0 +1,9 @@
+name = "TreeSim"
+uuid = "dc327cbd-6c9b-4100-9a5f-ed0bbf0cf4d5"
+authors = ["michaeltmeehan <michael.meehan1@jcu.edu.au>"]
+version = "0.1.0"
+
+[deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
+EpiSim = "baf66cd8-34c1-424a-92fd-19e59a9b7bce"
