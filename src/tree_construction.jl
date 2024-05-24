@@ -41,6 +41,9 @@ function get_hosts(linelist::DataFrame)
 end
 
 
+@forward Outbreak.linelist get_hosts
+
+
 """
     simulate_phylogeny(linelist::DataFrame; Nₑ::Float64=1e-6) -> DataFrame
 
@@ -51,16 +54,61 @@ Simulate a phylogenetic tree from a linelist DataFrame, generating within-host t
 - `Nₑ::Float64`: The effective population size (default is `1e-6`).
 
 # Returns
+- `nothing` : If linelist is empty or only contains a single individual, simulate_phylogeny returns `nothing`
 - `DataFrame`: A DataFrame representing the combined phylogenetic tree, containing columns for times (`t`), node IDs (`id`), left and right child IDs (`left`, `right`), leaf IDs (`leaf_id`), host IDs (`host`), and node types (`type`).
 """
-function simulate_phylogeny(linelist::DataFrame; Nₑ::Float64=1e-6)::DataFrame
+function simulate_phylogeny(linelist::DataFrame; Nₑ::Float64=1e-6, binarize=true)::Union{DataFrame, Nothing}
+    nrow(linelist) ≤ 1 && return nothing
     hosts = get_hosts(linelist)
+    sum(linelist[:, :parent_id] .== 0) != 1 && throw(ArgumentError("simulate_phylogeny cannot handle outbreaks with multiple seed cases"))
     # Generate within-host trees for each sampled host in linelist
     wtrees = [sample_wtree(host, Nₑ) for host in values(hosts) if host.id != 0]
-    return join_wtrees(wtrees)
+    tree = join_wtrees(wtrees)
+    if binarize
+        tree = binarize_tree(tree)
+    end
+    return tree
 end
 
 
-# function simulate(proc::BDProcess, Nₑ::Float64)::DataFrame
-#     return simulate(proc.linelist, Nₑ)
-# end
+@forward Outbreak.linelist simulate_phylogeny
+
+
+function Base.convert(::Type{RecursiveTree}, df::DataFrame)
+    # df_binary = binarize_tree(df)
+    tree = RecursiveTree{OneRoot, String, Dict{String, Any}, Dict{String, Any}, PolytomousBranching, Float64,Dict{String, Any}}()
+    @eachrow! df begin
+        lab = string(:id)
+        createnode!(tree, lab)
+        setnodedata!(tree, lab, "id", :id)
+        setnodedata!(tree, lab, "t", :t)
+        setnodedata!(tree, lab, "host", :host)
+        setnodedata!(tree, lab, "type", :type)
+        :left != 0 && createbranch!(tree, lab, string(:left), df[:left, :].t - :t)
+        :right != 0 && createbranch!(tree, lab, string(:right), df[:right, :].t - :t)
+    end
+    return tree
+end
+
+
+RecursiveTree(df::DataFrame) = convert(RecursiveTree, df)
+
+
+function RecursiveTree(out::Outbreak; Nₑ=1e-6, binarize=true)
+    tree = simulate_phylogeny(out, Nₑ=Nₑ, binarize=binarize)
+    return convert(RecursiveTree, tree)
+end
+
+
+mutable struct Phylogeny
+    tree::RecursiveTree
+    Nₑ::Float64
+end
+
+
+function Phylogeny(out::Outbreak; Nₑ=1e-6, binarize=true)
+    return Phylogeny(RecursiveTree(out, Nₑ=Nₑ, binarize=binarize), Nₑ)
+end
+
+
+@forward Phylogeny.tree RecursiveTree

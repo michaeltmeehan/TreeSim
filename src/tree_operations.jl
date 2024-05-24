@@ -9,7 +9,7 @@ Check if a node is a leaf node in a phylogenetic tree.
 # Returns
 - `Bool`: `true` if the node is a leaf node (i.e., both `left` and `right` are 0), `false` otherwise.
 """
-function isleaf(node::DataFrameRow)::Bool
+function Phylo.isleaf(node::DataFrameRow)::Bool
     return node.left == 0 && node.right == 0
 end
 
@@ -57,13 +57,13 @@ Check if a node is the root node in a phylogenetic tree.
 # Returns
 - `Bool`: `true` if the node is the root node (i.e., `host` is 0), `false` otherwise.
 """
-function isroot(node::DataFrameRow)::Bool
+function Phylo.isroot(node::DataFrameRow)::Bool
     return node.host == 0
 end
 
 
 """
-    binarize(tree::DataFrame) -> DataFrame
+    binarize_tree(tree::DataFrame) -> DataFrame
 
 Transform a phylogenetic tree into its binary form by collapsing unary nodes and retaining only leaf, binary, and root nodes.
 
@@ -73,7 +73,7 @@ Transform a phylogenetic tree into its binary form by collapsing unary nodes and
 # Returns
 - `DataFrame`: A new DataFrame representing the binary form of the input phylogenetic tree. The new DataFrame will have updated `id`, `left`, and `right` columns to reflect the collapsed unary nodes.
 """
-function binarize(tree::DataFrame)
+function binarize_tree(tree::DataFrame)
     ctree = copy(tree)
     binary_tree = DataFrame()
     for row in eachrow(ctree)

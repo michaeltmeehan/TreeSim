@@ -18,6 +18,11 @@ module TreeSim
 
 using DataFrames
 using DataFramesMeta
+using EpiSim
+using Lazy
+using Phylo
+using RecipesBase
+using RecipesPipeline
 
 
 """
@@ -53,8 +58,9 @@ include("backward.jl")
 include("forward.jl")
 include("sampling.jl")
 include("tree_construction.jl")
+include("plot.jl")
 
-export Host
+export Host, Phylogeny
 export simulate_phylogeny, get_hosts
 
 
