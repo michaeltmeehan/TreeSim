@@ -57,7 +57,7 @@ Simulate a phylogenetic tree from a linelist DataFrame, generating within-host t
 - `nothing` : If linelist is empty or only contains a single individual, simulate_phylogeny returns `nothing`
 - `DataFrame`: A DataFrame representing the combined phylogenetic tree, containing columns for times (`t`), node IDs (`id`), left and right child IDs (`left`, `right`), leaf IDs (`leaf_id`), host IDs (`host`), and node types (`type`).
 """
-function simulate_phylogeny(linelist::DataFrame; Nₑ::Float64=1e-6, binarize=true)::Union{DataFrame, Nothing}
+function simulate_phylogeny(linelist::DataFrame; Nₑ::Float64=1e-6, binarize=false)::Union{Phylogeny, Nothing}
     nrow(linelist) ≤ 1 && return nothing
     hosts = get_hosts(linelist)
     sum(linelist[:, :parent_id] .== 0) != 1 && throw(ArgumentError("simulate_phylogeny cannot handle outbreaks with multiple seed cases"))
@@ -67,7 +67,7 @@ function simulate_phylogeny(linelist::DataFrame; Nₑ::Float64=1e-6, binarize=tr
     if binarize
         tree = binarize_tree(tree)
     end
-    return tree
+    return Phylogeny(tree, RecursiveTree(tree), Nₑ)
 end
 
 
@@ -75,40 +75,61 @@ end
 
 
 function Base.convert(::Type{RecursiveTree}, df::DataFrame)
-    # df_binary = binarize_tree(df)
     tree = RecursiveTree{OneRoot, String, Dict{String, Any}, Dict{String, Any}, PolytomousBranching, Float64,Dict{String, Any}}()
     @eachrow! df begin
         lab = string(:id)
-        createnode!(tree, lab)
-        setnodedata!(tree, lab, "id", :id)
-        setnodedata!(tree, lab, "t", :t)
-        setnodedata!(tree, lab, "host", :host)
-        setnodedata!(tree, lab, "type", :type)
-        :left != 0 && createbranch!(tree, lab, string(:left), df[:left, :].t - :t)
-        :right != 0 && createbranch!(tree, lab, string(:right), df[:right, :].t - :t)
+        createnode_withdata!(tree, lab, data=Dict("id" => :id, "t" => :t, "host" => :host, "type" => :type))
+        :left != 0 && createbranch_withdata!(tree, lab, string(:left), df[:left, :].t - :t, data=Dict("host" => df[:left, :].host, "type" => df[:left, :].type))
+        :right != 0 && createbranch_withdata!(tree, lab, string(:right), df[:right, :].t - :t, data=Dict("host" => df[:right, :].host, "type" => df[:right, :].type))
     end
     return tree
+end
+
+
+function createnode_withdata!(tree::Phylo.AbstractTree, lab::String; data::Union{Dict, Nothing}=nothing)
+    Phylo.createnode!(tree, lab)
+    if !isnothing(data)
+        for (k, v) in data
+            setnodedata!(tree, lab, k, v)
+        end
+    end
+end
+
+
+function createbranch_withdata!(tree::Phylo.AbstractTree, src::String, dest::String, len::Float64; data::Union{Dict, Nothing}=nothing)
+    branch = Phylo.createbranch!(tree, src, dest, len)
+    if !isnothing(data)
+        for (k, v) in data
+            setbranchdata!(tree, branch, k, v)
+        end
+    end
+    return branch
 end
 
 
 RecursiveTree(df::DataFrame) = convert(RecursiveTree, df)
 
 
-function RecursiveTree(out::Outbreak; Nₑ=1e-6, binarize=true)
-    tree = simulate_phylogeny(out, Nₑ=Nₑ, binarize=binarize)
-    return convert(RecursiveTree, tree)
-end
-
-
 mutable struct Phylogeny
+    arr::DataFrame
     tree::RecursiveTree
     Nₑ::Float64
 end
 
 
-function Phylogeny(out::Outbreak; Nₑ=1e-6, binarize=true)
-    return Phylogeny(RecursiveTree(out, Nₑ=Nₑ, binarize=binarize), Nₑ)
+function Base.show(io::IO, phylo::Phylogeny)
+    println(io, "Phylogeny summary")
+    println(io, "================")
+    @unpack arr, tree, Nₑ = phylo
+    println(io, "Rooted tree with $(nleaves(tree)) $(nleaves(tree) == 1 ? "tip" : "tips") and $(nroots(tree)) $(nroots(tree) == 1 ? "root" : "roots"). ")
+    ln = getleafnames(tree)
+    if length(ln) < 10
+        println(io, "Leaf names are " * join(ln, ", ", " and "))
+    else
+        println(io,
+              "Leaf names are " * join(ln[1:5], ", ") *
+              ", ... [$(length(ln) - 6) omitted] ... and $(ln[end])")
+    end
+    println(io, "Tree height: $(round(arr[1, :t] - arr[end, :t], digits=2)) time units")
+    println(io, "Effective population size (Nₑ): $(Nₑ)")
 end
-
-
-@forward Phylogeny.tree RecursiveTree

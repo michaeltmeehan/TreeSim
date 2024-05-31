@@ -2,7 +2,7 @@
 
 julia_version = "1.10.2"
 manifest_format = "2.0"
-project_hash = "7d466bc0ef70e2e9f56f521a5da234184f330141"
+project_hash = "85cdfbdd7dc448e6a8983d8e7990f3596b391cc9"
 
 [[deps.Accessors]]
 deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "LinearAlgebra", "MacroTools", "Markdown", "Test"]
@@ -325,7 +325,7 @@ version = "0.6.8"
 
 [[deps.EpiSim]]
 deps = ["BenchmarkTools", "DataFrames", "DataFramesMeta", "Lazy", "MetaGraphsNext", "Parameters", "PlotlyJS", "Plots", "RecipesBase", "RecipesPipeline", "RecursiveArrayTools", "StatsBase", "Test", "UnPack"]
-git-tree-sha1 = "fc2e22b89351407e3c17b352be93d86e5b490aab"
+git-tree-sha1 = "67fe8e32b2d0a8dd303b1c850de6de5543e67297"
 repo-rev = "main"
 repo-url = "https://github.com/michaeltmeehan/EpiSim.jl"
 uuid = "baf66cd8-34c1-424a-92fd-19e59a9b7bce"

@@ -26,10 +26,10 @@ using DataFrames
 params = CRBDParameters(N₀=1, λ=0.5, μ=0.2, ψ=0.1, ρ₀=0.1, r=0.1, t_max=100.0)
 
 # Simulate the epidemiological process
-out = EpiSim.simulate(params, N_max = 50, S_max = 10)
+out = simulate_outbreak(params, N_max = 50, S_max = 10)
 
 # Generate the phylogenetic tree from the linelist
-tree = simulate_phylogeny(out.linelist)
+tree = simulate_phylogeny(out)
 
 # Display the resulting tree
 println(tree)
@@ -39,7 +39,7 @@ println(tree)
 ### `simulate_phylogeny`
 Simulate a phylogenetic tree from a linelist DataFrame.
 ```julia
-simulate_phylogeny(linelist::DataFrame; Nₑ::Float64=1e-6) -> DataFrame
+simulate_phylogeny(linelist::DataFrame; Nₑ::Float64=1e-6, binarize=false) -> Phylogeny
 ```
 #### Arguments
 - `linelist::DataFrame`: A `DataFrame` representing the history of transmission of an outbreak. Each row should include columns for the infected individual's ID (child_id), the ID of the person that infected them (parent_id), the time of infection (t_birth), the time of sampling (t_sam), and additional columns like child_type and parent_type.
